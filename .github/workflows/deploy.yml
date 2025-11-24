@@ -23,6 +23,26 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
+      - name: Verify Supabase secrets
+        run: |
+          if [[ -z "${SUPABASE_URL}" || -z "${SUPABASE_ANON_KEY}" ]]; then
+            echo "::error::VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY secrets must be configured." >&2
+            exit 1
+          fi
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - name: Generate runtime config
+        run: |
+          cat <<EOF > public/app-config.js
+          window.__APP_CONFIG__ = {
+            supabaseUrl: "${SUPABASE_URL}",
+            supabaseAnonKey: "${SUPABASE_ANON_KEY}"
+          };
+          EOF
+        env:
+          SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - run: npm ci
       - run: npm run build
         env:
