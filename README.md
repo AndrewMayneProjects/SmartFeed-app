@@ -43,6 +43,9 @@ npm run preview    # locally serve the production build
 3. Use an action such as [`peaceiris/actions-gh-pages`](https://github.com/peaceiris/actions-gh-pages) or `crazy-max/ghaction-github-pages` to build (`npm ci && npm run build`) and push `dist/` to the `gh-pages` branch.
 4. Enable GitHub Pages to serve from that branch. Vite’s default configuration works without additional changes unless you host from a subdirectory—set `base` in `vite.config.ts` to match if needed.
 
+### Continuous deployment
+This repository already includes `.github/workflows/deploy.yml`. Every push to `main` runs `npm ci`, builds with your Supabase secrets, and publishes the contents of `dist/` to GitHub Pages automatically. You can manually trigger the workflow from the Actions tab when needed.
+
 ## Supabase configuration checklist
 - Auth → URL configuration includes the GitHub Pages domain in `additional_redirect_urls`.
 - Row Level Security policies allow authenticated users to `select` from `feed_items`.
