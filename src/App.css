@@ -593,6 +593,45 @@
   gap: 12px;
 }
 
+.characterCreateCard {
+  padding: 20px;
+}
+
+.characterCreateHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.characterCreateHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #f8fafc;
+}
+
+.createCloseButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(15, 23, 42, 0.55);
+  color: #e0f2fe;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.createCloseButton:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+}
+
+.createCloseButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .characterHeader {
   display: flex;
   align-items: center;
@@ -697,30 +736,17 @@
   box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
 }
 
-.characterCreateInputWrapper {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-}
-
-.characterCreateDescriptionWithMic {
-  padding-right: 58px;
-}
-
 .micButton {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(56, 189, 248, 0.45);
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
   background: rgba(15, 23, 42, 0.75);
   color: #bae6fd;
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border 0.2s ease, background 0.2s ease;
 }
 
 .micButton:hover:not(:disabled) {
@@ -750,6 +776,7 @@
   justify-content: flex-end;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .secondaryButton {

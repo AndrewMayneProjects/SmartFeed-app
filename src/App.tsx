@@ -796,24 +796,25 @@ function App() {
         </main>
       ) : (
         <section className="characterList">
-          <div className="characterActions">
-            <button
-              type="button"
-              className="characterCreateToggle"
-              onClick={createMode ? handleToggleRecording : handleStartCreate}
-              disabled={creatingCharacter}
-              aria-pressed={createMode && recording}
-            >
-              {createMode ? (recording ? <StopIcon /> : <MicIcon />) : "+ New character"}
-            </button>
-          </div>
+          {!createMode ? (
+            <div className="characterActions">
+              <button
+                type="button"
+                className="characterCreateToggle"
+                onClick={handleStartCreate}
+                disabled={creatingCharacter}
+              >
+                + New character
+              </button>
+            </div>
+          ) : null}
           {createMode ? (
             <article className="card characterCreateCard">
               <header className="characterCreateHeader">
                 <h3>Describe your new character</h3>
                 <button
                   type="button"
-                  className="modalBackButton"
+                  className="createCloseButton"
                   onClick={handleCancelCreate}
                   aria-label="Close create character form"
                   disabled={creatingCharacter}
@@ -837,21 +838,19 @@ function App() {
                 </label>
                 {createError ? <p className="errorMessage">{createError}</p> : null}
                 <div className="characterCreateActions">
-                  <div className="micControlGroup">
-                    <button
-                      type="button"
-                      className={`micButton ${recording ? "recording" : ""}`}
-                      onClick={handleToggleRecording}
-                      disabled={creatingCharacter}
-                      aria-pressed={recording}
-                      aria-label={recording ? "Stop recording" : "Record description"}
-                    >
-                      {recording ? <StopIcon /> : <MicIcon />}
-                    </button>
-                    <button type="submit" className="primaryButton" disabled={creatingCharacter}>
-                      {creatingCharacter ? "Creating…" : "Create character"}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className={`micButton ${recording ? "recording" : ""}`}
+                    onClick={handleToggleRecording}
+                    disabled={creatingCharacter}
+                    aria-pressed={recording}
+                    aria-label={recording ? "Stop recording" : "Record description"}
+                  >
+                    {recording ? <StopIcon /> : <MicIcon />}
+                  </button>
+                  <button type="submit" className="primaryButton" disabled={creatingCharacter}>
+                    {creatingCharacter ? "Creating…" : "Create character"}
+                  </button>
                 </div>
               </form>
             </article>
