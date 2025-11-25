@@ -581,7 +581,7 @@ function App() {
         if (!navigator.mediaDevices?.getUserMedia) {
           throw new Error("This browser does not support microphone input.");
         }
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       audioChunksRef.current = [];
       recorder.ondataavailable = (event) => {
@@ -800,28 +800,44 @@ function App() {
             <button
               type="button"
               className="characterCreateToggle"
-              onClick={handleStartCreate}
-              disabled={createMode || creatingCharacter}
+              onClick={createMode ? handleToggleRecording : handleStartCreate}
+              disabled={creatingCharacter}
+              aria-pressed={createMode && recording}
             >
-              + New character
+              {createMode ? (recording ? <StopIcon /> : <MicIcon />) : "+ New character"}
             </button>
           </div>
           {createMode ? (
             <article className="card characterCreateCard">
+              <header className="characterCreateHeader">
+                <h3>Describe your new character</h3>
+                <button
+                  type="button"
+                  className="modalBackButton"
+                  onClick={handleCancelCreate}
+                  aria-label="Close create character form"
+                  disabled={creatingCharacter}
+                >
+                  ✕
+                </button>
+              </header>
               <form className="characterCreateForm" onSubmit={handleCreateCharacterSubmit}>
                 <label>
                   <span>Character description</span>
-                  <div className="characterCreateInputWrapper">
-                    <textarea
-                      className={`characterCreateDescription ${recording ? "characterCreateDescriptionWithMic" : ""}`}
-                      name="description"
-                      placeholder="Describe the persona, goals, tone, and any quirks you want this character to have."
-                      value={createDescription}
-                      onChange={(event) => setCreateDescription(event.target.value)}
-                      disabled={creatingCharacter}
-                      minLength={12}
-                      required
-                    />
+                  <textarea
+                    className="characterCreateDescription"
+                    name="description"
+                    placeholder="Describe the persona, goals, tone, and any quirks you want this character to have."
+                    value={createDescription}
+                    onChange={(event) => setCreateDescription(event.target.value)}
+                    disabled={creatingCharacter}
+                    minLength={12}
+                    required
+                  />
+                </label>
+                {createError ? <p className="errorMessage">{createError}</p> : null}
+                <div className="characterCreateActions">
+                  <div className="micControlGroup">
                     <button
                       type="button"
                       className={`micButton ${recording ? "recording" : ""}`}
@@ -830,23 +846,12 @@ function App() {
                       aria-pressed={recording}
                       aria-label={recording ? "Stop recording" : "Record description"}
                     >
-                      🎙
+                      {recording ? <StopIcon /> : <MicIcon />}
+                    </button>
+                    <button type="submit" className="primaryButton" disabled={creatingCharacter}>
+                      {creatingCharacter ? "Creating…" : "Create character"}
                     </button>
                   </div>
-                </label>
-                {createError ? <p className="errorMessage">{createError}</p> : null}
-                <div className="characterCreateActions">
-                  <button
-                    type="button"
-                    className="secondaryButton"
-                    onClick={handleCancelCreate}
-                    disabled={creatingCharacter}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="primaryButton" disabled={creatingCharacter}>
-                    {creatingCharacter ? "Creating…" : "Create character"}
-                  </button>
                 </div>
               </form>
             </article>
@@ -965,6 +970,41 @@ function Toast({ message }: { message: string }) {
     </div>
   );
 }
+
+const MicIcon = () => (
+  <svg
+    aria-hidden="true"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3Z" />
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+    <line x1="12" x2="12" y1="19" y2="22" />
+    <line x1="8" x2="16" y1="22" y2="22" />
+  </svg>
+);
+
+const StopIcon = () => (
+  <svg
+    aria-hidden="true"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+  </svg>
+);
 
 function FeedCard({
   item,
