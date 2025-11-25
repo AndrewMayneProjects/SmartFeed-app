@@ -1,7 +1,11 @@
-html,
-body {
+:root {
   font-size: var(--app-base-font-size, 18px);
   line-height: 1.6;
+}
+
+html,
+body {
+  font-size: 1rem;
 }
 
 .appShell {
@@ -42,7 +46,7 @@ body {
 }
 
 .appTitle {
-  font-size: 30px;
+  font-size: 1.667rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   margin: 0;
@@ -52,7 +56,7 @@ body {
 .appSubtitle {
   margin: 8px 0 0;
   color: rgba(148, 163, 184, 0.85);
-  font-size: 15px;
+  font-size: 0.833rem;
 }
 
 .authForm {
@@ -66,7 +70,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 14px;
+  font-size: 0.778rem;
   color: #cbd5f5;
 }
 
@@ -74,7 +78,7 @@ body {
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 14px;
   padding: 12px 14px;
-  font-size: 16px;
+  font-size: 0.889rem;
   color: #f1f5f9;
   background: rgba(15, 23, 42, 0.6);
   transition: border 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -99,7 +103,7 @@ body {
   background: linear-gradient(130deg, #38bdf8, #6366f1);
   color: #f8fafc;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 0.889rem;
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
@@ -129,13 +133,13 @@ body {
 .statusMessage {
   margin-top: 16px;
   color: #38bdf8;
-  font-size: 15px;
+  font-size: 0.833rem;
 }
 
 .errorMessage {
   margin: 12px 0 0;
   color: #f87171;
-  font-size: 15px;
+  font-size: 0.833rem;
 }
 
 .toast {
@@ -151,7 +155,7 @@ body {
   box-shadow:
     0 20px 40px rgba(2, 6, 23, 0.45),
     0 12px 24px rgba(37, 99, 235, 0.25);
-  font-size: 15px;
+  font-size: 0.833rem;
   z-index: 260;
   animation: toastSlide 0.25s ease-out;
 }
@@ -225,7 +229,7 @@ body {
   border: none;
   border-radius: 999px;
   padding: 8px 16px;
-  font-size: 15px;
+  font-size: 0.833rem;
   font-weight: 600;
   color: rgba(226, 232, 240, 0.7);
   background: transparent;
@@ -278,7 +282,7 @@ body {
   border-radius: 16px;
   padding: 14px 22px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 0.889rem;
   cursor: pointer;
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.42));
   color: #f8fafc;
@@ -314,7 +318,7 @@ body {
   border: 1px solid rgba(56, 189, 248, 0.35);
   background: rgba(15, 23, 42, 0.6);
   color: #f8fafc;
-  font-size: 18px;
+  font-size: 1rem;
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -380,7 +384,7 @@ body {
 
 .accountEmail {
   margin: 0;
-  font-size: 15px;
+  font-size: 0.833rem;
   color: #f8fafc;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -389,7 +393,7 @@ body {
 
 .accountHint {
   margin: 0;
-  font-size: 13px;
+  font-size: 0.722rem;
   color: rgba(148, 163, 184, 0.7);
 }
 
@@ -406,7 +410,7 @@ body {
 }
 
 .accountSection label {
-  font-size: 14px;
+  font-size: 0.778rem;
   color: rgba(226, 232, 240, 0.85);
 }
 
@@ -416,13 +420,13 @@ body {
   background: rgba(15, 23, 42, 0.6);
   color: #f8fafc;
   padding: 10px 12px;
-  font-size: 15px;
+  font-size: 0.833rem;
   cursor: pointer;
 }
 
 .accountSection small {
   color: rgba(148, 163, 184, 0.85);
-  font-size: 13px;
+  font-size: 0.722rem;
 }
 
 .signOutButton {
@@ -570,7 +574,7 @@ body {
   border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 16px;
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 0.778rem;
   font-weight: 600;
   background: rgba(15, 23, 42, 0.6);
   color: #38bdf8;
@@ -639,7 +643,7 @@ body {
 
 .characterCreateHeader h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 1rem;
   color: #f8fafc;
 }
 
@@ -673,7 +677,7 @@ body {
 
 .characterHeader h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 0.944rem;
   color: #f8fafc;
   width: 100%;
 }
@@ -682,7 +686,7 @@ body {
   border: 1px solid rgba(56, 189, 248, 0.35);
   border-radius: 16px;
   padding: 8px 16px;
-  font-size: 14px;
+  font-size: 0.778rem;
   font-weight: 600;
   color: #f8fafc;
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.4));
@@ -717,7 +721,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.722rem;
   color: rgba(148, 163, 184, 0.85);
 }
 
@@ -743,7 +747,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 14px;
+  font-size: 0.778rem;
   color: rgba(226, 232, 240, 0.8);
 }
 
@@ -755,7 +759,7 @@ body {
   border: 1px solid rgba(56, 189, 248, 0.25);
   background: rgba(15, 23, 42, 0.6);
   color: #f8fafc;
-  font-size: 15px;
+  font-size: 0.833rem;
   line-height: 1.45;
 }
 
@@ -814,7 +818,7 @@ body {
   background: rgba(15, 23, 42, 0.6);
   color: rgba(226, 232, 240, 0.82);
   padding: 10px 16px;
-  font-size: 14px;
+  font-size: 0.778rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s ease, border 0.18s ease, transform 0.12s ease;
@@ -863,13 +867,13 @@ body {
 
 .feedTitle {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.111rem;
   color: #f8fafc;
 }
 
 .feedMeta {
   color: rgba(148, 163, 184, 0.8);
-  font-size: 14px;
+  font-size: 0.778rem;
   margin: 4px 0 0;
 }
 
@@ -879,7 +883,7 @@ body {
   color: #bae6fd;
   padding: 8px 12px;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 0.833rem;
 }
 
 .feedPreview {
@@ -887,7 +891,7 @@ body {
   color: rgba(226, 232, 240, 0.92);
   line-height: 1.55;
   white-space: pre-wrap;
-  font-size: 16px;
+  font-size: 0.889rem;
 }
 
 .feedBody {
@@ -895,7 +899,7 @@ body {
   color: rgba(226, 232, 240, 0.95);
   line-height: 1.65;
   white-space: pre-wrap;
-  font-size: 16px;
+  font-size: 0.889rem;
 }
 
 .feedFooter {
@@ -907,7 +911,7 @@ body {
 }
 
 .feedCta {
-  font-size: 13px;
+  font-size: 0.722rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(56, 189, 248, 0.8);
@@ -919,7 +923,7 @@ body {
   border-radius: 16px;
   background: rgba(15, 23, 42, 0.85);
   color: #bae6fd;
-  font-size: 18px;
+  font-size: 1rem;
   width: 46px;
   height: 46px;
   display: inline-flex;
@@ -992,12 +996,12 @@ body {
   }
   .viewSwitch__button {
     padding: 8px 12px;
-    font-size: 14px;
+    font-size: 0.778rem;
   }
   .generateButton {
     flex: 0 0 auto;
     padding: 12px 16px;
-    font-size: 15px;
+    font-size: 0.833rem;
     white-space: nowrap;
   }
   .timeline,
