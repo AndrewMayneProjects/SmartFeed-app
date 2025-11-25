@@ -581,7 +581,7 @@ function App() {
         if (!navigator.mediaDevices?.getUserMedia) {
           throw new Error("This browser does not support microphone input.");
         }
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const recorder = new MediaRecorder(stream);
       audioChunksRef.current = [];
       recorder.ondataavailable = (event) => {
@@ -592,14 +592,22 @@ function App() {
       recorder.onstop = async () => {
         setRecording(false);
         stream.getTracks().forEach((track) => track.stop());
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+        const firstChunkType = audioChunksRef.current[0]?.type || "audio/webm";
+        const audioBlob = new Blob(audioChunksRef.current, { type: firstChunkType });
+        const extension = firstChunkType.includes("mp4")
+          ? "mp4"
+          : firstChunkType.includes("ogg")
+            ? "ogg"
+            : firstChunkType.includes("wav")
+              ? "wav"
+              : "webm";
         if (audioBlob.size === 0) {
           setCreateError("No audio captured. Try again.");
           return;
         }
         try {
           const formData = new FormData();
-          formData.append("audio", audioBlob, "character.webm");
+          formData.append("audio", audioBlob, `character.${extension}`);
           formData.append("prompt", "Transcribe this user spoken description for a fictional character.");
 
           const targetUrl = `${supabaseUrl}/functions/v1/transcribe-audio`;
