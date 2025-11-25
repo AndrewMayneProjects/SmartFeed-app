@@ -22,6 +22,7 @@ type FeedItem = {
   audio_url: string | null;
   audio_status: AudioStatus;
   audio_voice: string | null;
+  audio_error: string | null;
 };
 
 const FEED_LIMIT = 40;
@@ -141,12 +142,9 @@ function App() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [fontSizeChoice, setFontSizeChoice] = useState<FontSizeChoice>("comfortable");
-  const [audioUnlocked, setAudioUnlocked] = useState<Record<string, boolean>>({});
-  const [audioRequesting, setAudioRequesting] = useState<Record<string, boolean>>({});
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const toastTimeoutRef = useRef<number | null>(null);
-  const autoAudioRequestedRef = useRef<Set<string>>(new Set());
 
   const closeAccount = useCallback(() => setAccountOpen(false), []);
   const toggleAccount = useCallback(() => setAccountOpen((open) => !open), []);
@@ -219,7 +217,7 @@ function App() {
       const { data, error: feedError } = await supabase
         .from("feed_items")
         .select(
-          "id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at, audio_url, audio_status, audio_voice"
+          "id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at, audio_url, audio_status, audio_voice, audio_error"
         )
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
@@ -234,7 +232,8 @@ function App() {
           bookmarks: typeof entry.bookmarks === "number" ? entry.bookmarks : 0,
           audio_status: ((entry.audio_status as AudioStatus | null) ?? "idle") as AudioStatus,
           audio_url: entry.audio_url ?? null,
-          audio_voice: entry.audio_voice ?? null
+          audio_voice: entry.audio_voice ?? null,
+          audio_error: entry.audio_error ?? null
         }));
         let bookmarkedSet = new Set<string>();
         if (sanitized.length > 0) {
@@ -544,76 +543,6 @@ function App() {
     [session, pendingBookmark, showToastMessage]
   );
 
-  const handleRequestAudio = useCallback(
-    async (feedItemId: string, options?: { silent?: boolean }) => {
-      if (!session?.user?.id) return;
-      setAudioRequesting((prev) => ({ ...prev, [feedItemId]: true }));
-      try {
-        const authHeaders =
-          session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
-        const { error: fnError } = await supabase.functions.invoke("synthesize-feed-audio", {
-          body: { feed_item_id: feedItemId },
-          headers: authHeaders
-        });
-        if (fnError) {
-          throw fnError;
-        }
-        if (!options?.silent) {
-          showToastMessage("Generating narration…");
-        }
-        await loadFeed();
-      } catch (audioError) {
-        console.error("Failed to synthesize audio:", audioError);
-        if (!options?.silent) {
-          const message =
-            audioError instanceof Error
-              ? audioError.message
-              : typeof audioError === "object" && audioError !== null && "message" in audioError
-                ? String((audioError as { message: unknown }).message)
-                : "Unable to generate narration.";
-          showToastMessage(message);
-        }
-      } finally {
-        setAudioRequesting((prev) => {
-          const next = { ...prev };
-          delete next[feedItemId];
-          return next;
-        });
-      }
-    },
-    [session?.user?.id, showToastMessage, loadFeed]
-  );
-
-  const handleEnableAudio = useCallback((feedItemId: string) => {
-    setAudioUnlocked((prev) => ({ ...prev, [feedItemId]: true }));
-  }, []);
-
-  useEffect(() => {
-    if (!session?.user?.id) {
-      autoAudioRequestedRef.current.clear();
-      setAudioUnlocked({});
-      setAudioRequesting({});
-    }
-  }, [session?.user?.id]);
-
-  useEffect(() => {
-    if (!session?.user?.id) return;
-    const autoBatchLimit = 2;
-    let scheduled = 0;
-    for (const item of feedItems) {
-      if (scheduled >= autoBatchLimit) break;
-      if (
-        !item.audio_url &&
-        (!item.audio_status || item.audio_status === "idle") &&
-        !autoAudioRequestedRef.current.has(item.id)
-      ) {
-        autoAudioRequestedRef.current.add(item.id);
-        scheduled += 1;
-        handleRequestAudio(item.id, { silent: true });
-      }
-    }
-  }, [feedItems, session?.user?.id, handleRequestAudio]);
-
   const handleStartCreate = useCallback(() => {
     setCreateMode(true);
     setCreateDescription("");
@@ -892,12 +821,6 @@ function App() {
                 isReacting={pendingLike === item.id}
                 onBookmark={() => handleBookmark(item)}
                 isBookmarking={pendingBookmark === item.id}
-                onGenerateAudio={() => handleRequestAudio(item.id)}
-                generatingAudio={Boolean(audioRequesting[item.id])}
-                audioStatus={item.audio_status}
-                audioUrl={item.audio_url}
-                audioEnabled={Boolean(audioUnlocked[item.id])}
-                onEnableAudio={() => handleEnableAudio(item.id)}
               />
             ))
           )}
@@ -1039,12 +962,6 @@ type FeedCardProps = {
   isReacting: boolean;
   onBookmark: () => void;
   isBookmarking: boolean;
-  onGenerateAudio: () => void;
-  generatingAudio: boolean;
-  audioStatus: AudioStatus;
-  audioUrl: string | null;
-  audioEnabled: boolean;
-  onEnableAudio: () => void;
 };
 
 type CharacterSummary = {
@@ -1146,26 +1063,11 @@ const StopIcon = () => (
   </svg>
 );
 
-function FeedCard({
-  item,
-  isExpanded,
-  onToggle,
-  onInteract,
-  onReact,
-  isReacting,
-  onBookmark,
-  isBookmarking,
-  onGenerateAudio,
-  generatingAudio,
-  audioStatus,
-  audioUrl,
-  audioEnabled,
-  onEnableAudio
-}: FeedCardProps) {
+function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting, onBookmark, isBookmarking }: FeedCardProps) {
   const previewText = buildPreview(item.content ?? item.tldr);
-  const resolvedAudioStatus: AudioStatus = audioStatus ?? "idle";
-  const showReadyAudio = resolvedAudioStatus === "ready" && Boolean(audioUrl);
-  const isAudioProcessing = generatingAudio || resolvedAudioStatus === "processing";
+  const resolvedAudioStatus: AudioStatus = item.audio_status ?? "idle";
+  const showNarration =
+    Boolean(item.audio_url) || (resolvedAudioStatus !== "idle" && resolvedAudioStatus !== undefined);
 
   return (
     <article
@@ -1222,71 +1124,32 @@ function FeedCard({
       ) : (
         <p className="feedPreview">{previewText}</p>
       )}
-      <div
-        className="feedAudioSection"
-        role="region"
-        aria-label="Story narration"
-        onClick={(event) => event.stopPropagation()}
-        onKeyDown={(event) => event.stopPropagation()}
-      >
-        {showReadyAudio ? (
-          audioEnabled ? (
-            <audio
-              className="feedAudioPlayer"
-              controls
-              preload="none"
-              src={audioUrl ?? undefined}
-              autoPlay
-            >
+      {showNarration ? (
+        <div
+          className="feedAudioSection"
+          role="region"
+          aria-label="Story narration"
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          {item.audio_url ? (
+            <audio className="feedAudioPlayer" controls preload="none" src={item.audio_url ?? undefined}>
               <track kind="captions" label="Transcript not available" />
             </audio>
           ) : (
-            <button
-              type="button"
-              className="audioActionButton"
-              onClick={(event) => {
-                event.stopPropagation();
-                onEnableAudio();
-              }}
+            <span
+              className={`audioStatusChip ${resolvedAudioStatus === "error" ? "audioStatusChip--error" : ""}`}
+              role="status"
             >
-              ▶ Play audio
-            </button>
-          )
-        ) : isAudioProcessing ? (
-          <span className="audioStatusChip" role="status">
-            Narration is rendering…
-          </span>
-        ) : resolvedAudioStatus === "error" ? (
-          <div className="audioGenerateRow">
-            <span className="audioStatusChip audioStatusChip--error" role="status">
-              Audio failed
+              {resolvedAudioStatus === "processing"
+                ? "Narration is rendering…"
+                : resolvedAudioStatus === "error"
+                  ? item.audio_error ?? "Narration unavailable."
+                  : "Narration queued…"}
             </span>
-            <button
-              type="button"
-              className="audioActionButton"
-              disabled={generatingAudio}
-              onClick={(event) => {
-                event.stopPropagation();
-                onGenerateAudio();
-              }}
-            >
-              Retry audio
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className="audioActionButton"
-            disabled={generatingAudio}
-            onClick={(event) => {
-              event.stopPropagation();
-              onGenerateAudio();
-            }}
-          >
-            {generatingAudio ? "Starting audio…" : "Generate audio"}
-          </button>
-        )}
-      </div>
+          )}
+        </div>
+      ) : null}
       <div className="feedFooter">
         <button
           type="button"
