@@ -549,8 +549,11 @@ function App() {
       if (!session?.user?.id) return;
       setAudioRequesting((prev) => ({ ...prev, [feedItemId]: true }));
       try {
+        const authHeaders =
+          session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
         const { error: fnError } = await supabase.functions.invoke("synthesize-feed-audio", {
-          body: { feed_item_id: feedItemId }
+          body: { feed_item_id: feedItemId },
+          headers: authHeaders
         });
         if (fnError) {
           throw fnError;
