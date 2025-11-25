@@ -974,7 +974,7 @@ const FONT_SIZE_PRESETS: Record<FontSizeChoice, { label: string; size: number }>
   compact: { label: "Compact", size: 16 },
   comfortable: { label: "Comfortable", size: 18 },
   large: { label: "Large", size: 20 },
-  extra: { label: "Extra large", size: 22 }
+  extra: { label: "Extra large", size: 22.5 }
 };
 
 function CharacterCard({ character, onGenerate, isGenerating }: CharacterCardProps) {
