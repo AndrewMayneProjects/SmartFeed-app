@@ -5,7 +5,49 @@
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartFeed</title>
-    <script src="%BASE_URL%app-config.js"></script>
+    <script>
+      (function loadConfig() {
+        if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+          return;
+        }
+        var seen = new Set();
+        var urls = [];
+        var currentDir = window.location.pathname.replace(/[^/]*$/, "");
+        var bases = [
+          window.location.origin + currentDir,
+          window.location.origin + "%BASE_URL%",
+          window.location.origin + "/SmartFeed-app/"
+        ];
+        for (var i = 0; i < bases.length; i++) {
+          try {
+            var base = bases[i];
+            if (!base.endsWith("/")) base += "/";
+            var url = new URL("app-config.js", base).href;
+            if (!seen.has(url)) {
+              seen.add(url);
+              urls.push(url);
+            }
+          } catch (err) {
+            console.warn("[SmartFeed] skipping invalid config base", bases[i], err);
+          }
+        }
+
+        (function tryNext() {
+          var next = urls.shift();
+          if (!next) return;
+          var script = document.createElement("script");
+          script.src = next;
+          script.onload = function () {
+            console.info("[SmartFeed] config loaded from", next);
+          };
+          script.onerror = function () {
+            console.warn("[SmartFeed] failed to load config from", next);
+            tryNext();
+          };
+          document.head.appendChild(script);
+        })();
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
