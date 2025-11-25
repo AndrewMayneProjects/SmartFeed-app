@@ -5,6 +5,8 @@ import "./App.css";
 
 type AuthMode = "signIn" | "signUp";
 
+type AudioStatus = "idle" | "processing" | "ready" | "error";
+
 type FeedItem = {
   id: string;
   character_id: string | null;
@@ -17,6 +19,9 @@ type FeedItem = {
   bookmarks: number;
   is_bookmarked: boolean;
   created_at: string | null;
+  audio_url: string | null;
+  audio_status: AudioStatus;
+  audio_voice: string | null;
 };
 
 const FEED_LIMIT = 40;
@@ -136,9 +141,12 @@ function App() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
   const [fontSizeChoice, setFontSizeChoice] = useState<FontSizeChoice>("comfortable");
+  const [audioUnlocked, setAudioUnlocked] = useState<Record<string, boolean>>({});
+  const [audioRequesting, setAudioRequesting] = useState<Record<string, boolean>>({});
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const toastTimeoutRef = useRef<number | null>(null);
+  const autoAudioRequestedRef = useRef<Set<string>>(new Set());
 
   const closeAccount = useCallback(() => setAccountOpen(false), []);
   const toggleAccount = useCallback(() => setAccountOpen((open) => !open), []);
@@ -210,7 +218,9 @@ function App() {
     try {
       const { data, error: feedError } = await supabase
         .from("feed_items")
-        .select("id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at")
+        .select(
+          "id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at, audio_url, audio_status, audio_voice"
+        )
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
         .limit(FEED_LIMIT);
@@ -221,7 +231,10 @@ function App() {
         const sanitized = (data ?? []).map((entry) => ({
           ...entry,
           likes: typeof entry.likes === "number" ? entry.likes : 0,
-          bookmarks: typeof entry.bookmarks === "number" ? entry.bookmarks : 0
+          bookmarks: typeof entry.bookmarks === "number" ? entry.bookmarks : 0,
+          audio_status: ((entry.audio_status as AudioStatus | null) ?? "idle") as AudioStatus,
+          audio_url: entry.audio_url ?? null,
+          audio_voice: entry.audio_voice ?? null
         }));
         let bookmarkedSet = new Set<string>();
         if (sanitized.length > 0) {
@@ -531,6 +544,73 @@ function App() {
     [session, pendingBookmark, showToastMessage]
   );
 
+  const handleRequestAudio = useCallback(
+    async (feedItemId: string, options?: { silent?: boolean }) => {
+      if (!session?.user?.id) return;
+      setAudioRequesting((prev) => ({ ...prev, [feedItemId]: true }));
+      try {
+        const { error: fnError } = await supabase.functions.invoke("synthesize-feed-audio", {
+          body: { feed_item_id: feedItemId }
+        });
+        if (fnError) {
+          throw fnError;
+        }
+        if (!options?.silent) {
+          showToastMessage("Generating narration…");
+        }
+        await loadFeed();
+      } catch (audioError) {
+        console.error("Failed to synthesize audio:", audioError);
+        if (!options?.silent) {
+          const message =
+            audioError instanceof Error
+              ? audioError.message
+              : typeof audioError === "object" && audioError !== null && "message" in audioError
+                ? String((audioError as { message: unknown }).message)
+                : "Unable to generate narration.";
+          showToastMessage(message);
+        }
+      } finally {
+        setAudioRequesting((prev) => {
+          const next = { ...prev };
+          delete next[feedItemId];
+          return next;
+        });
+      }
+    },
+    [session?.user?.id, showToastMessage, loadFeed]
+  );
+
+  const handleEnableAudio = useCallback((feedItemId: string) => {
+    setAudioUnlocked((prev) => ({ ...prev, [feedItemId]: true }));
+  }, []);
+
+  useEffect(() => {
+    if (!session?.user?.id) {
+      autoAudioRequestedRef.current.clear();
+      setAudioUnlocked({});
+      setAudioRequesting({});
+    }
+  }, [session?.user?.id]);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    const autoBatchLimit = 2;
+    let scheduled = 0;
+    for (const item of feedItems) {
+      if (scheduled >= autoBatchLimit) break;
+      if (
+        !item.audio_url &&
+        (!item.audio_status || item.audio_status === "idle") &&
+        !autoAudioRequestedRef.current.has(item.id)
+      ) {
+        autoAudioRequestedRef.current.add(item.id);
+        scheduled += 1;
+        handleRequestAudio(item.id, { silent: true });
+      }
+    }
+  }, [feedItems, session?.user?.id, handleRequestAudio]);
+
   const handleStartCreate = useCallback(() => {
     setCreateMode(true);
     setCreateDescription("");
@@ -809,6 +889,12 @@ function App() {
                 isReacting={pendingLike === item.id}
                 onBookmark={() => handleBookmark(item)}
                 isBookmarking={pendingBookmark === item.id}
+                onGenerateAudio={() => handleRequestAudio(item.id)}
+                generatingAudio={Boolean(audioRequesting[item.id])}
+                audioStatus={item.audio_status}
+                audioUrl={item.audio_url}
+                audioEnabled={Boolean(audioUnlocked[item.id])}
+                onEnableAudio={() => handleEnableAudio(item.id)}
               />
             ))
           )}
@@ -950,6 +1036,12 @@ type FeedCardProps = {
   isReacting: boolean;
   onBookmark: () => void;
   isBookmarking: boolean;
+  onGenerateAudio: () => void;
+  generatingAudio: boolean;
+  audioStatus: AudioStatus;
+  audioUrl: string | null;
+  audioEnabled: boolean;
+  onEnableAudio: () => void;
 };
 
 type CharacterSummary = {
@@ -1059,9 +1151,18 @@ function FeedCard({
   onReact,
   isReacting,
   onBookmark,
-  isBookmarking
+  isBookmarking,
+  onGenerateAudio,
+  generatingAudio,
+  audioStatus,
+  audioUrl,
+  audioEnabled,
+  onEnableAudio
 }: FeedCardProps) {
   const previewText = buildPreview(item.content ?? item.tldr);
+  const resolvedAudioStatus: AudioStatus = audioStatus ?? "idle";
+  const showReadyAudio = resolvedAudioStatus === "ready" && Boolean(audioUrl);
+  const isAudioProcessing = generatingAudio || resolvedAudioStatus === "processing";
 
   return (
     <article
@@ -1118,6 +1219,71 @@ function FeedCard({
       ) : (
         <p className="feedPreview">{previewText}</p>
       )}
+      <div
+        className="feedAudioSection"
+        role="region"
+        aria-label="Story narration"
+        onClick={(event) => event.stopPropagation()}
+        onKeyDown={(event) => event.stopPropagation()}
+      >
+        {showReadyAudio ? (
+          audioEnabled ? (
+            <audio
+              className="feedAudioPlayer"
+              controls
+              preload="none"
+              src={audioUrl ?? undefined}
+              autoPlay
+            >
+              <track kind="captions" label="Transcript not available" />
+            </audio>
+          ) : (
+            <button
+              type="button"
+              className="audioActionButton"
+              onClick={(event) => {
+                event.stopPropagation();
+                onEnableAudio();
+              }}
+            >
+              ▶ Play audio
+            </button>
+          )
+        ) : isAudioProcessing ? (
+          <span className="audioStatusChip" role="status">
+            Narration is rendering…
+          </span>
+        ) : resolvedAudioStatus === "error" ? (
+          <div className="audioGenerateRow">
+            <span className="audioStatusChip audioStatusChip--error" role="status">
+              Audio failed
+            </span>
+            <button
+              type="button"
+              className="audioActionButton"
+              disabled={generatingAudio}
+              onClick={(event) => {
+                event.stopPropagation();
+                onGenerateAudio();
+              }}
+            >
+              Retry audio
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="audioActionButton"
+            disabled={generatingAudio}
+            onClick={(event) => {
+              event.stopPropagation();
+              onGenerateAudio();
+            }}
+          >
+            {generatingAudio ? "Starting audio…" : "Generate audio"}
+          </button>
+        )}
+      </div>
       <div className="feedFooter">
         <button
           type="button"
