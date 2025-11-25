@@ -14,7 +14,6 @@ type FeedItem = {
   character_name: string | null;
   character_image_url: string | null;
   likes: number;
-  dislikes: number;
   bookmarks: number;
   is_bookmarked: boolean;
   created_at: string | null;
@@ -192,7 +191,7 @@ function App() {
     try {
       const { data, error: feedError } = await supabase
         .from("feed_items")
-        .select("id, character_id, title, content, tldr, character_name, character_image_url, likes, dislikes, bookmarks, created_at")
+        .select("id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at")
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
         .limit(FEED_LIMIT);
@@ -203,7 +202,6 @@ function App() {
         const sanitized = (data ?? []).map((entry) => ({
           ...entry,
           likes: typeof entry.likes === "number" ? entry.likes : 0,
-          dislikes: typeof entry.dislikes === "number" ? entry.dislikes : 0,
           bookmarks: typeof entry.bookmarks === "number" ? entry.bookmarks : 0
         }));
         let bookmarkedSet = new Set<string>();
@@ -421,19 +419,15 @@ function App() {
         }
         const parsed = payload as Record<string, unknown>;
         const nextLikes = typeof parsed.likes === "number" ? parsed.likes : item.likes;
-        const nextDislikes = typeof parsed.dislikes === "number" ? parsed.dislikes : item.dislikes;
         const nextCharacterLikes =
           typeof parsed.character_likes === "number" ? parsed.character_likes : undefined;
-        const nextCharacterDislikes =
-          typeof parsed.character_dislikes === "number" ? parsed.character_dislikes : undefined;
 
         setFeedItems((items) =>
           items.map((feedItem) =>
             feedItem.id === item.id
               ? {
                   ...feedItem,
-                  likes: nextLikes,
-                  dislikes: nextDislikes
+                  likes: nextLikes
                 }
               : feedItem
           )
@@ -444,8 +438,7 @@ function App() {
               character.id === item.character_id
                 ? {
                     ...character,
-                    likes: nextCharacterLikes ?? character.likes,
-                    dislikes: nextCharacterDislikes ?? character.dislikes
+                    likes: nextCharacterLikes ?? character.likes
                   }
                 : character
             )
