@@ -18,8 +18,8 @@ const globalConfig: RuntimeConfig | undefined =
       ? window.__APP_CONFIG__
       : undefined;
 
-const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || globalConfig?.supabaseUrl || "").trim();
-const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || globalConfig?.supabaseAnonKey || "").trim();
+export const supabaseUrl = (import.meta.env.VITE_SUPABASE_URL || globalConfig?.supabaseUrl || "").trim();
+export const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || globalConfig?.supabaseAnonKey || "").trim();
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn("Supabase configuration missing. Ensure build-time environment variables or public/app-config.js provide VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");

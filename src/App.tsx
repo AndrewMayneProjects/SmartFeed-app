@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { supabase } from "./lib/supabaseClient";
+import { supabase, supabaseAnonKey, supabaseUrl } from "./lib/supabaseClient";
 import "./App.css";
 
 type AuthMode = "signIn" | "signUp";
@@ -602,17 +602,26 @@ function App() {
           formData.append("audio", audioBlob, "character.webm");
           formData.append("prompt", "Transcribe this user spoken description for a fictional character.");
 
-          const { data, error } = await supabase.functions.invoke("transcribe-audio", {
+          const targetUrl = `${supabaseUrl}/functions/v1/transcribe-audio`;
+          const authToken = session?.access_token ?? supabaseAnonKey;
+          const response = await fetch(targetUrl, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              apikey: supabaseAnonKey
+            },
             body: formData
           });
 
-          if (error) {
-            throw error;
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText || "Edge function returned an error.");
           }
 
+          const payload = await response.json();
           const text =
-            data && typeof data === "object" && "text" in data && typeof (data as { text: unknown }).text === "string"
-              ? (data as { text: string }).text
+            payload && typeof payload === "object" && "text" in payload && typeof (payload as { text: unknown }).text === "string"
+              ? (payload as { text: string }).text
               : "";
           if (!text) {
             throw new Error("Transcription failed.");
@@ -628,6 +637,7 @@ function App() {
                 ? String((transcribeError as { message: unknown }).message)
                 : "Failed to transcribe audio.";
           setCreateError(message);
+          showToastMessage(message);
         }
       };
       mediaRecorderRef.current = recorder;
@@ -645,7 +655,7 @@ function App() {
       showToastMessage(message);
       setCreateError(message);
     }
-  }, [recording, showToastMessage]);
+  }, [recording, session, showToastMessage]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
