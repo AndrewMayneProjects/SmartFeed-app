@@ -149,7 +149,7 @@ function App() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const stored = window.localStorage.getItem("smartfeed-font-size");
-    if (stored && (stored === "compact" || stored === "comfortable" || stored === "large")) {
+    if (stored && (stored === "compact" || stored === "comfortable" || stored === "large" || stored === "extra")) {
       setFontSizeChoice(stored);
     }
   }, []);
@@ -968,12 +968,13 @@ type CharacterCardProps = {
   isGenerating: boolean;
 };
 
-type FontSizeChoice = "compact" | "comfortable" | "large";
+type FontSizeChoice = "compact" | "comfortable" | "large" | "extra";
 
 const FONT_SIZE_PRESETS: Record<FontSizeChoice, { label: string; size: number }> = {
   compact: { label: "Compact", size: 16 },
   comfortable: { label: "Comfortable", size: 18 },
-  large: { label: "Large", size: 20 }
+  large: { label: "Large", size: 20 },
+  extra: { label: "Extra large", size: 22 }
 };
 
 function CharacterCard({ character, onGenerate, isGenerating }: CharacterCardProps) {
