@@ -385,8 +385,13 @@ function App() {
     setGenerating(true);
     setError(null);
     try {
-      const headers =
-        session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
+      const headers: Record<string, string> = {};
+      if (session?.access_token) {
+        headers.Authorization = `Bearer ${session.access_token}`;
+      }
+      if (supabaseAnonKey) {
+        headers.apikey = supabaseAnonKey;
+      }
       const { error: fnError } = await supabase.functions.invoke("generate-weighted-feed-item", {
         body: { source: "web-app" },
         headers
@@ -416,8 +421,13 @@ function App() {
       setError(null);
       setStatusMessage(null);
       try {
-        const headers =
-          session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
+        const headers: Record<string, string> = {};
+        if (session?.access_token) {
+          headers.Authorization = `Bearer ${session.access_token}`;
+        }
+        if (supabaseAnonKey) {
+          headers.apikey = supabaseAnonKey;
+        }
         const { error: fnError } = await supabase.functions.invoke("generate-weighted-feed-item", {
           body: { source: "web-app", character_id: characterId },
           headers
