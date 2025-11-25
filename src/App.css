@@ -1,6 +1,6 @@
 html,
 body {
-  font-size: 18px;
+  font-size: var(--app-base-font-size, 18px);
   line-height: 1.6;
 }
 
@@ -397,6 +397,32 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.accountSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.accountSection label {
+  font-size: 14px;
+  color: rgba(226, 232, 240, 0.85);
+}
+
+.accountSection select {
+  border-radius: 14px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  padding: 10px 12px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.accountSection small {
+  color: rgba(148, 163, 184, 0.85);
+  font-size: 13px;
 }
 
 .signOutButton {

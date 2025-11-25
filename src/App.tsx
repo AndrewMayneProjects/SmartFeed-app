@@ -135,6 +135,7 @@ function App() {
   const [creatingCharacter, setCreatingCharacter] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
+  const [fontSizeChoice, setFontSizeChoice] = useState<FontSizeChoice>("comfortable");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const toastTimeoutRef = useRef<number | null>(null);
@@ -144,6 +145,24 @@ function App() {
   const toggleExpanded = useCallback((itemId: string) => {
     setExpandedId((current) => (current === itemId ? null : itemId));
   }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem("smartfeed-font-size");
+    if (stored && (stored === "compact" || stored === "comfortable" || stored === "large")) {
+      setFontSizeChoice(stored);
+    }
+  }, []);
+
+  useEffect(() => {
+    const preset = FONT_SIZE_PRESETS[fontSizeChoice];
+    if (typeof document !== "undefined") {
+      document.documentElement.style.setProperty("--app-base-font-size", `${preset.size}px`);
+    }
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("smartfeed-font-size", fontSizeChoice);
+    }
+  }, [fontSizeChoice]);
 
   const showToastMessage = useCallback((message: string) => {
     setStatusMessage(message);
@@ -893,6 +912,24 @@ function App() {
               </button>
             </header>
             <div className="accountActions">
+              <div className="accountSection">
+                <label htmlFor="fontSizeSelect">Font size</label>
+                <select
+                  id="fontSizeSelect"
+                  value={fontSizeChoice}
+                  onChange={(event) => {
+                    const next = event.target.value as FontSizeChoice;
+                    setFontSizeChoice(next);
+                  }}
+                >
+                  {Object.entries(FONT_SIZE_PRESETS).map(([key, preset]) => (
+                    <option key={key} value={key}>
+                      {preset.label}
+                    </option>
+                  ))}
+                </select>
+                <small>Saved to this device for a consistent web-app experience.</small>
+              </div>
               <button className="primaryButton signOutButton" onClick={handleSignOut}>
                 Sign out
               </button>
@@ -929,6 +966,14 @@ type CharacterCardProps = {
   character: CharacterSummary;
   onGenerate: () => void;
   isGenerating: boolean;
+};
+
+type FontSizeChoice = "compact" | "comfortable" | "large";
+
+const FONT_SIZE_PRESETS: Record<FontSizeChoice, { label: string; size: number }> = {
+  compact: { label: "Compact", size: 16 },
+  comfortable: { label: "Comfortable", size: 18 },
+  large: { label: "Large", size: 20 }
 };
 
 function CharacterCard({ character, onGenerate, isGenerating }: CharacterCardProps) {
