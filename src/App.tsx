@@ -362,10 +362,22 @@ function App() {
   );
 
   const handleSignOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setFeedItems([]);
-    setExpandedId(null);
-    closeAccount();
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+    } catch (signOutError) {
+      const message =
+        signOutError instanceof Error
+          ? signOutError.message
+          : typeof signOutError === "object" && signOutError !== null && "message" in signOutError
+            ? String((signOutError as { message: unknown }).message)
+            : "Failed to sign out.";
+      setError(message);
+    } finally {
+      setFeedItems([]);
+      setExpandedId(null);
+      closeAccount();
+    }
   }, [closeAccount]);
 
   const handleGenerate = useCallback(async () => {
@@ -373,8 +385,11 @@ function App() {
     setGenerating(true);
     setError(null);
     try {
+      const headers =
+        session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
       const { error: fnError } = await supabase.functions.invoke("generate-weighted-feed-item", {
-        body: { source: "web-app" }
+        body: { source: "web-app" },
+        headers
       });
       if (fnError) {
         throw fnError;
@@ -401,8 +416,11 @@ function App() {
       setError(null);
       setStatusMessage(null);
       try {
+        const headers =
+          session?.access_token != null ? { Authorization: `Bearer ${session.access_token}` } : undefined;
         const { error: fnError } = await supabase.functions.invoke("generate-weighted-feed-item", {
-          body: { source: "web-app", character_id: characterId }
+          body: { source: "web-app", character_id: characterId },
+          headers
         });
         if (fnError) {
           throw fnError;
