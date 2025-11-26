@@ -503,7 +503,7 @@ body {
 
 .feedHeroImage {
   width: 100%;
-  height: 220px;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 20px 20px 12px 12px;
   display: block;
@@ -638,14 +638,28 @@ body {
 
 .characterCard {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.characterHeaderRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.characterIdentity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
 }
 
 .characterAvatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
   background: rgba(30, 30, 30, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.3);
   display: grid;
@@ -663,29 +677,9 @@ body {
   border-radius: inherit;
 }
 
-.characterBody {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.characterCreateCard {
-  padding: 20px;
-}
-
-.characterCreateHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.characterCreateHeader h3 {
+.characterIdentityText h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.972rem;
   color: var(--text-primary);
 }
 
@@ -708,20 +702,6 @@ body {
 .createCloseButton:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-.characterHeader {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.characterHeader h3 {
-  margin: 0;
-  font-size: 0.944rem;
-  color: var(--text-primary);
-  width: 100%;
 }
 
 .characterGenerateButton {
@@ -765,6 +745,7 @@ body {
   gap: 8px;
   font-size: 0.722rem;
   color: rgba(200, 200, 200, 0.85);
+  margin-top: 4px;
 }
 
 .characterStat {
