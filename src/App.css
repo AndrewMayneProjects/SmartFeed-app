@@ -558,6 +558,7 @@ body {
   align-items: center;
   flex: 1;
   min-width: 0;
+  transform: translateY(-10px);
 }
 
 .feedHeaderInfo {
