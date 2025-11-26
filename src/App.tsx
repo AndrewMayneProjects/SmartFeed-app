@@ -1149,7 +1149,7 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
       ) : (
         <p className="feedPreview">{previewText}</p>
       )}
-      {showNarration ? (
+      {showNarration && item.audio_url ? (
         <div
           className="feedAudioSection"
           role="region"
@@ -1157,22 +1157,9 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
           onClick={(event) => event.stopPropagation()}
           onKeyDown={(event) => event.stopPropagation()}
         >
-          {item.audio_url ? (
-            <audio className="feedAudioPlayer" controls preload="none" src={item.audio_url ?? undefined}>
-              <track kind="captions" label="Transcript not available" />
-            </audio>
-          ) : (
-            <span
-              className={`audioStatusChip ${resolvedAudioStatus === "error" ? "audioStatusChip--error" : ""}`}
-              role="status"
-            >
-              {resolvedAudioStatus === "processing"
-                ? "Narration is rendering…"
-                : resolvedAudioStatus === "error"
-                  ? item.audio_error ?? "Narration unavailable."
-                  : "Narration queued…"}
-            </span>
-          )}
+          <audio className="feedAudioPlayer" controls preload="none" src={item.audio_url ?? undefined}>
+            <track kind="captions" label="Transcript not available" />
+          </audio>
         </div>
       ) : null}
       <div className="feedFooter">
