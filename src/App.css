@@ -50,7 +50,7 @@ body {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -79,7 +79,7 @@ body {
 .authCard,
 .loadingCard,
 .emptyState {
-  width: min(420px, 100%);
+  width: min(520px, 100%);
   text-align: left;
 }
 
@@ -234,7 +234,7 @@ body {
 
 .appTopBar {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -476,13 +476,13 @@ body {
 
 .timeline {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   margin: 0 auto;
 }
 
 .feedList {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   padding: 0;
   margin: 0 auto;
   display: flex;
@@ -622,7 +622,7 @@ body {
 
 .characterList {
   width: 100%;
-  max-width: 420px;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1048,7 +1048,7 @@ body {
     gap: 8px;
     justify-content: space-between;
     width: 100%;
-    max-width: 420px;
+    max-width: 520px;
     padding: 0 12px;
   }
   .navActions {
@@ -1077,7 +1077,7 @@ body {
   .feedList,
   .characterList {
     width: 100%;
-    max-width: 420px;
+    max-width: 520px;
     padding-inline: 12px;
     margin: 0 auto;
   }
