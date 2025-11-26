@@ -642,17 +642,10 @@ body {
   gap: 14px;
 }
 
-.characterHeaderRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
 .characterIdentity {
   display: flex;
-  align-items: center;
   gap: 12px;
+  align-items: flex-start;
   min-width: 0;
 }
 
@@ -681,6 +674,15 @@ body {
   margin: 0;
   font-size: 0.972rem;
   color: var(--text-primary);
+}
+
+.characterActionsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+  flex-wrap: wrap;
 }
 
 .createCloseButton {

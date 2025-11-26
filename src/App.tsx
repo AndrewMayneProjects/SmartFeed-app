@@ -1025,27 +1025,27 @@ function CharacterCard({ character, onGenerate, isGenerating }: CharacterCardPro
 
   return (
     <article className="card characterCard">
-      <div className="characterHeaderRow">
-        <div className="characterIdentity">
-          <div className="characterAvatar">
-            {character.image_url ? (
-              <img src={character.image_url} alt={`${character.name} avatar`} />
-            ) : (
-              <span>{character.name.charAt(0).toUpperCase()}</span>
-            )}
-          </div>
-          <div className="characterIdentityText">
-            <h3>{character.name}</h3>
+      <div className="characterIdentity">
+        <div className="characterAvatar">
+          {character.image_url ? (
+            <img src={character.image_url} alt={`${character.name} avatar`} />
+          ) : (
+            <span>{character.name.charAt(0).toUpperCase()}</span>
+          )}
+        </div>
+        <div className="characterIdentityText">
+          <h3>{character.name}</h3>
+          <div className="characterActionsRow">
             <div className="characterStats" aria-label="Character likes">
               <span className="characterStat">
                 <ThumbUpIcon /> {character.likes}
               </span>
             </div>
+            <button className="characterGenerateButton" onClick={onGenerate} disabled={isGenerating}>
+              <span className="buttonLabel">{isGenerating ? "Generating…" : "Generate item"}</span>
+            </button>
           </div>
         </div>
-        <button className="characterGenerateButton" onClick={onGenerate} disabled={isGenerating}>
-          <span className="buttonLabel">{isGenerating ? "Generating…" : "Generate item"}</span>
-        </button>
       </div>
       <p className="characterDescription">{truncated}</p>
     </article>
