@@ -1117,19 +1117,29 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
         }
       }}
     >
-      <div className="feedCardHeader">
-        <div className="feedHeaderRow">
-          {item.character_image_url ? (
-            <img className="avatar" src={item.character_image_url} alt={item.character_name ?? "Character avatar"} />
-          ) : (
-            <span className="avatar placeholder">{item.character_name?.[0]?.toUpperCase() ?? "?"}</span>
-          )}
-          <div className="feedHeaderInfo">
-            <span className="feedAuthor">{item.character_name ?? "Unknown character"}</span>
-            {item.created_at ? <span className="feedTime">{formatRelativeTime(item.created_at)}</span> : null}
+      <div className="feedHeroWrapper">
+        {item.header_image_url ? (
+          <img
+            className="feedHeroImage"
+            src={item.header_image_url}
+            alt={item.title ?? item.character_name ?? "Story header image"}
+            loading="lazy"
+          />
+        ) : (
+          <div className="feedHeroImage fallback" aria-hidden="true" />
+        )}
+        <div className="feedHeroOverlay">
+          <div className="feedHeaderRow">
+            {item.character_image_url ? (
+              <img className="avatar" src={item.character_image_url} alt={item.character_name ?? "Character avatar"} />
+            ) : (
+              <span className="avatar placeholder">{item.character_name?.[0]?.toUpperCase() ?? "?"}</span>
+            )}
+            <div className="feedHeaderInfo">
+              <span className="feedAuthor">{item.character_name ?? "Unknown character"}</span>
+              {item.created_at ? <span className="feedTime">{formatRelativeTime(item.created_at)}</span> : null}
+            </div>
           </div>
-        </div>
-        <div className="bookmarkWrapper">
           <button
             type="button"
             className={`bookmarkButton ${item.is_bookmarked ? "is-active" : ""}`}
@@ -1145,14 +1155,6 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
           </button>
         </div>
       </div>
-      {item.header_image_url ? (
-        <img
-          className="feedHeroImage"
-          src={item.header_image_url}
-          alt={item.title ?? item.character_name ?? "Story header image"}
-          loading="lazy"
-        />
-      ) : null}
       <h2 className="feedTitle">{item.title ?? "Untitled"}</h2>
       {isExpanded ? (
         <p className="feedBody">{(item.content ?? item.tldr ?? "").trim()}</p>

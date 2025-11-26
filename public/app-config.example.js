@@ -5,3 +5,4 @@ window.__APP_CONFIG__ = {
   supabaseAnonKey: "your-anon-key"
 };
 
+

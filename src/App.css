@@ -501,12 +501,33 @@ body {
     0 8px 18px rgba(255, 255, 255, 0.12);
 }
 
-.feedCardHeader {
+.feedHeroImage {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 20px 20px 12px 12px;
+  display: block;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.feedHeroImage.fallback {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.2));
+}
+
+.feedHeroWrapper {
   position: relative;
+  overflow: hidden;
+  border-radius: 20px 20px 16px 16px;
+}
+
+.feedHeroOverlay {
+  position: absolute;
+  inset: 0;
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  padding-top: 4px;
+  padding: 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 60%);
 }
 
 .feedHeaderRow {
@@ -524,36 +545,22 @@ body {
   min-width: 0;
 }
 
-.bookmarkWrapper {
-  position: absolute;
-  top: -16px;
-  right: -6px;
-}
-
-.feedHeroImage {
-  width: calc(100% + 48px);
-  margin: 0 -24px;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-}
-
 .bookmarkButton {
   width: 36px;
   height: 36px;
   display: grid;
   place-items: center;
   border: none;
-  background: transparent;
-  color: rgba(245, 245, 245, 0.7);
+  color: rgba(245, 245, 245, 0.9);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
   cursor: pointer;
-  transition: color 0.18s ease, transform 0.12s ease;
+  transition: transform 0.12s ease, background 0.12s ease;
 }
 
 .bookmarkButton:hover:not(:disabled) {
-  transform: translateY(-1px);
-  color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .bookmarkButton.is-active {
@@ -561,7 +568,7 @@ body {
 }
 
 .bookmarkButton:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: default;
 }
 
