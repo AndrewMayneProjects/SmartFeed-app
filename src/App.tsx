@@ -1134,9 +1134,15 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
         <div className="feedHeroOverlay">
           <div className="feedHeaderRow">
             {item.character_image_url ? (
-              <img className="avatar" src={item.character_image_url} alt={item.character_name ?? "Character avatar"} />
+              <img
+                className="avatar heroAvatar"
+                src={item.character_image_url}
+                alt={item.character_name ?? "Character avatar"}
+              />
             ) : (
-              <span className="avatar placeholder">{item.character_name?.[0]?.toUpperCase() ?? "?"}</span>
+              <span className="avatar placeholder heroAvatar">
+                {item.character_name?.[0]?.toUpperCase() ?? "?"}
+              </span>
             )}
             <div className="feedHeaderInfo">
               <span className="feedAuthor">{item.character_name ?? "Unknown character"}</span>

@@ -558,7 +558,6 @@ body {
   align-items: center;
   flex: 1;
   min-width: 0;
-  transform: translateY(-18px);
 }
 
 .feedHeaderInfo {
@@ -691,6 +690,10 @@ body {
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
+}
+.heroAvatar {
+  position: relative;
+  transform: translateY(-18px);
 }
 
 .characterIdentityText h3 {
