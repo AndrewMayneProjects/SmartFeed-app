@@ -1116,19 +1116,15 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
       }}
     >
       <div className="feedCardHeader">
-        <div className="feedHeaderMain">
+        <div className="feedHeaderRow">
           {item.character_image_url ? (
             <img className="avatar" src={item.character_image_url} alt={item.character_name ?? "Character avatar"} />
           ) : (
             <span className="avatar placeholder">{item.character_name?.[0]?.toUpperCase() ?? "?"}</span>
           )}
-      <div>
-            <h2 className="feedTitle">{item.title ?? "Untitled"}</h2>
-            <p className="feedMeta">
-              <span className="feedAuthor">{item.character_name ?? "Unknown character"}</span>
-              {item.created_at ? <span className="feedTime"> · {formatRelativeTime(item.created_at)}</span> : null}
-            </p>
-            {item.tldr ? <p className="feedTldr">{item.tldr}</p> : null}
+          <div className="feedHeaderInfo">
+            <span className="feedAuthor">{item.character_name ?? "Unknown character"}</span>
+            {item.created_at ? <span className="feedTime">{formatRelativeTime(item.created_at)}</span> : null}
           </div>
         </div>
         <div className="bookmarkWrapper">
@@ -1147,6 +1143,7 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
           </button>
         </div>
       </div>
+      <h2 className="feedTitle">{item.title ?? "Untitled"}</h2>
       {isExpanded ? (
         <p className="feedBody">{(item.content ?? item.tldr ?? "").trim()}</p>
       ) : (

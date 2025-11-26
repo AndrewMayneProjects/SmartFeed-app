@@ -485,23 +485,30 @@ body {
 .feedCardHeader {
   position: relative;
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding-top: 12px;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
 }
 
-.feedHeaderMain {
+.feedHeaderRow {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: center;
   flex: 1;
+  min-width: 0;
+}
+
+.feedHeaderInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
 .bookmarkWrapper {
   position: absolute;
-  top: -28px;
-  right: -12px;
+  top: 8px;
+  right: 0;
 }
 
 .bookmarkButton {
@@ -866,24 +873,9 @@ body {
 }
 
 .feedTitle {
-  margin: 0;
+  margin: 10px 0 6px;
   font-size: 1.111rem;
   color: #f8fafc;
-}
-
-.feedMeta {
-  color: rgba(148, 163, 184, 0.8);
-  font-size: 0.778rem;
-  margin: 4px 0 0;
-}
-
-.feedTldr {
-  margin: 8px 0 0;
-  background: linear-gradient(120deg, rgba(56, 189, 248, 0.16), rgba(99, 102, 241, 0.16));
-  color: #bae6fd;
-  padding: 8px 12px;
-  border-radius: 12px;
-  font-size: 0.833rem;
 }
 
 .feedPreview {
