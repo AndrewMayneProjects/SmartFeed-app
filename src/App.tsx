@@ -15,6 +15,7 @@ type FeedItem = {
   tldr: string | null;
   character_name: string | null;
   character_image_url: string | null;
+  header_image_url: string | null;
   likes: number;
   bookmarks: number;
   is_bookmarked: boolean;
@@ -217,7 +218,7 @@ function App() {
       const { data, error: feedError } = await supabase
         .from("feed_items")
         .select(
-          "id, character_id, title, content, tldr, character_name, character_image_url, likes, bookmarks, created_at, audio_url, audio_status, audio_voice, audio_error"
+          "id, character_id, title, content, tldr, character_name, character_image_url, header_image_url, likes, bookmarks, created_at, audio_url, audio_status, audio_voice, audio_error"
         )
         .eq("user_id", session.user.id)
         .order("created_at", { ascending: false })
@@ -233,7 +234,8 @@ function App() {
           audio_status: ((entry.audio_status as AudioStatus | null) ?? "idle") as AudioStatus,
           audio_url: entry.audio_url ?? null,
           audio_voice: entry.audio_voice ?? null,
-          audio_error: entry.audio_error ?? null
+          audio_error: entry.audio_error ?? null,
+          header_image_url: entry.header_image_url ?? null
         }));
         let bookmarkedSet = new Set<string>();
         if (sanitized.length > 0) {
@@ -1143,6 +1145,14 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
           </button>
         </div>
       </div>
+      {item.header_image_url ? (
+        <img
+          className="feedHeroImage"
+          src={item.header_image_url}
+          alt={item.title ?? item.character_name ?? "Story header image"}
+          loading="lazy"
+        />
+      ) : null}
       <h2 className="feedTitle">{item.title ?? "Untitled"}</h2>
       {isExpanded ? (
         <p className="feedBody">{(item.content ?? item.tldr ?? "").trim()}</p>
