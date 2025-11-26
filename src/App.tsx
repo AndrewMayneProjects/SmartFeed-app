@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseAnonKey, supabaseUrl } from "./lib/supabaseClient";
 import "./App.css";
+import ReactMarkdown from "react-markdown";
 
 type AuthMode = "signIn" | "signUp";
 
@@ -1159,9 +1160,13 @@ function FeedCard({ item, isExpanded, onToggle, onInteract, onReact, isReacting,
       </div>
       <h2 className="feedTitle">{item.title ?? "Untitled"}</h2>
       {isExpanded ? (
-        <p className="feedBody">{(item.content ?? item.tldr ?? "").trim()}</p>
+        <div className="feedBody markdownContent">
+          <ReactMarkdown>{(item.content ?? item.tldr ?? "").trim()}</ReactMarkdown>
+        </div>
       ) : (
-        <p className="feedPreview">{previewText}</p>
+        <div className="feedPreview markdownContent">
+          <ReactMarkdown>{previewText}</ReactMarkdown>
+        </div>
       )}
       {showNarration && item.audio_url ? (
         <div
