@@ -786,6 +786,30 @@ body {
 
 .characterCreateCard {
   padding: 20px;
+  position: relative;
+}
+
+.characterCreateHeader {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  padding-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  z-index: 1;
+}
+
+.characterCreateHeader::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  bottom: 0;
+  height: 1px;
+  background: var(--border-subtle);
+  opacity: 0.6;
 }
 
 .characterCreateForm {
