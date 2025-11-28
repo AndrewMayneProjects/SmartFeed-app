@@ -228,7 +228,7 @@ serve(async (req)=>{
           },
           {
             role: "user",
-            content: historyContext
+            content: `${historyContext}\n\nPick a new idea that feels distinctive compared to the recent entries above. Stay true to the character's persona, but avoid repeating the same event, angle, or thesis. Surprise the audience with a different hook, conflict, or discovery that still makes sense for this character.`
           },
           {
             role: "user",
