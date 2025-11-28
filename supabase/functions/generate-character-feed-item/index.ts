@@ -54,6 +54,17 @@ serve(async (req)=>{
       status: 403
     });
   }
+  const { data: recentItems } = await supabaseAdmin
+    .from('feed_items')
+    .select('content, created_at')
+    .eq('character_id', characterId)
+    .order('created_at', { ascending: false })
+    .limit(5);
+  const historyBlocks = (recentItems ?? [])
+    .reverse()
+    .map((entry, idx) => `### Previous Item ${idx + 1}\n${entry.content?.trim() ?? ''}`)
+    .join('\n\n');
+  const historyContext = historyBlocks ? `Previous items:\n${historyBlocks}` : 'No previous items yet.';
   const prompt = `${character.prompt}\n\nYou are writing a single new feed entry for this character. Consider the recent posts you've crafted before, and deliberately pick a new idea, angle, or development that feels different while staying true to the persona. Avoid repeating the same event or punchline.`;
   const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -70,7 +81,7 @@ serve(async (req)=>{
         },
         {
           role: 'user',
-          content: 'Create one compelling feed item that feels fresh compared to the last few posts.'
+          content: `${historyContext}\n\nCreate one compelling feed item that feels fresh compared to the last few posts.`
         }
       ],
       max_tokens: 200
