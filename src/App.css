@@ -23,7 +23,7 @@
 :root {
   font-size: var(--app-base-font-size, 18px);
   line-height: 1.6;
-  --app-max-width: min(520px, 100vw);
+  --app-max-width: min(520px, calc(100vw - 12px));
   --surface: #050505;
   --surface-alt: #0b0b0b;
   --panel: #131313;
