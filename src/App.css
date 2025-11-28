@@ -23,6 +23,7 @@
 :root {
   font-size: var(--app-base-font-size, 18px);
   line-height: 1.6;
+  --app-max-width: min(520px, 100vw);
   --surface: #050505;
   --surface-alt: #0b0b0b;
   --panel: #131313;
@@ -50,7 +51,7 @@ body {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -79,7 +80,7 @@ body {
 .authCard,
 .loadingCard,
 .emptyState {
-  width: min(520px, 100%);
+  width: min(var(--app-max-width), 100%);
   text-align: left;
 }
 
@@ -234,7 +235,7 @@ body {
 
 .appTopBar {
   width: 100%;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -476,13 +477,13 @@ body {
 
 .timeline {
   width: 100%;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
 }
 
 .feedList {
   width: 100%;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   padding: 0;
   margin: 0 auto;
   display: flex;
@@ -622,7 +623,7 @@ body {
 
 .characterList {
   width: 100%;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1081,7 +1082,7 @@ body {
     gap: 8px;
     justify-content: space-between;
     width: 100%;
-    max-width: 520px;
+    max-width: var(--app-max-width);
     padding: 0 12px;
   }
   .navActions {
@@ -1110,7 +1111,7 @@ body {
   .feedList,
   .characterList {
     width: 100%;
-    max-width: 520px;
+    max-width: var(--app-max-width);
     padding-inline: 12px;
     margin: 0 auto;
   }
